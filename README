@@ -1,6 +1,6 @@
 Steps:
 1. Clone the repository
-2. run 'npm install' in the root of the react repo to install the necessary dependencies
+2. run 'npm install' in the root of the react repo (search_front_end directory) to install the necessary dependencies
 3. In the root of the project (one step above the react repo), run 'python3 backend.py' to start the flask backend
 4. in the root of the react repo, run 'npm start' to start the frontend.
 5. You should be all set now!
