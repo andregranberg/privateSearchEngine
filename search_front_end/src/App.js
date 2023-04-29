@@ -6,6 +6,7 @@ function App() {
   const [text, setText] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [selectedArticles, setSelectedArticles] = useState(new Set());
 
   const handleSubmit = async () => {
     try {
@@ -34,6 +35,32 @@ function App() {
       });
 
       setSearchResults(response.data.articles);
+    } catch (error) {
+      console.error("Error:", error);
+      alert("An error occurred.");
+    }
+  };
+
+  const handleArticleSelection = (id, isSelected) => {
+    const newSelectedArticles = new Set(selectedArticles);
+    if (isSelected) {
+      newSelectedArticles.add(id);
+    } else {
+      newSelectedArticles.delete(id);
+    }
+    setSelectedArticles(newSelectedArticles);
+  };
+
+  const handleRemoveSelected = async () => {
+    try {
+      await axios.post("http://localhost:5000/remove-articles", {
+        articleIds: Array.from(selectedArticles),
+      });
+  
+      // Filter out the removed articles from the searchResults state
+      setSearchResults(searchResults.filter((article) => !selectedArticles.has(article._id)));
+  
+      setSelectedArticles(new Set());
     } catch (error) {
       console.error("Error:", error);
       alert("An error occurred.");
@@ -69,9 +96,16 @@ function App() {
       </div>
 
       <h3>Search Results</h3>
+      <button onClick={handleRemoveSelected}>Remove Selected</button>
       <ul>
         {searchResults.map((article, index) => (
           <li key={index}>
+            <input
+              type="checkbox"
+              onChange={(e) =>
+                handleArticleSelection(article._id, e.target.checked)
+              }
+            />
             <h4>{article.title}</h4>
             <p>{article.text}</p>
           </li>

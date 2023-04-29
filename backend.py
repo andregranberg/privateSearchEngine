@@ -35,8 +35,14 @@ def add_article():
 def search_articles_route():
     search_query = request.get_json()["query"]
     search_results = search_articles(es, index_name, search_query)
-    return jsonify({"articles": [result["_source"] for result in search_results]})
+    return jsonify({"articles": [{"_id": result["_id"], **result["_source"]} for result in search_results]})
 
+@app.route('/remove-articles', methods=['POST'])
+def remove_articles():
+    article_ids = request.get_json()["articleIds"]
+    for article_id in article_ids:
+        es.delete(index=index_name, id=article_id)
+    return jsonify({"result": "success"})
 
 if __name__ == '__main__':
     app.run(port=5000)
