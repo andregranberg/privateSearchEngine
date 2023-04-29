@@ -4,6 +4,8 @@ import axios from "axios";
 function App() {
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
 
   const handleSubmit = async () => {
     try {
@@ -19,6 +21,19 @@ function App() {
       } else {
         alert("An error occurred.");
       }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("An error occurred.");
+    }
+  };
+
+  const handleSearch = async () => {
+    try {
+      const response = await axios.post("http://localhost:5000/search-articles", {
+        query: searchQuery,
+      });
+
+      setSearchResults(response.data.articles);
     } catch (error) {
       console.error("Error:", error);
       alert("An error occurred.");
@@ -41,6 +56,27 @@ function App() {
         <textarea value={text} onChange={(e) => setText(e.target.value)} />
       </div>
       <button onClick={handleSubmit}>Submit</button>
+
+      <h2>Search Articles</h2>
+      <div>
+        <label>Search:</label>
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <button onClick={handleSearch}>Search</button>
+      </div>
+
+      <h3>Search Results</h3>
+      <ul>
+        {searchResults.map((article, index) => (
+          <li key={index}>
+            <h4>{article.title}</h4>
+            <p>{article.text}</p>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

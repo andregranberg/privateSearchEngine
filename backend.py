@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask import render_template
 from flask_cors import CORS
 from elasticsearch import Elasticsearch
 
@@ -8,6 +9,19 @@ CORS(app)
 es = Elasticsearch([{"host": "localhost", "port": 9200, "scheme": "http"}])
 index_name = "news_articles"
 
+# Update the existing search_articles function
+def search_articles(es_instance, index_name, query):
+    search_body = {
+        "query": {
+            "multi_match": {
+                "query": query,
+                "fields": ["title", "text"]
+            }
+        }
+    }
+    response = es_instance.search(index=index_name, body=search_body)
+    return response["hits"]["hits"]
+
 @app.route('/add-article', methods=['POST'])
 def add_article():
     news_articles = request.get_json()
@@ -15,6 +29,13 @@ def add_article():
     es.index(index=index_name, body=news_articles)
 
     return jsonify({"result": "success"})
+
+# Add this function after the add_article function
+@app.route('/search-articles', methods=['POST'])
+def search_articles_route():
+    search_query = request.get_json()["query"]
+    search_results = search_articles(es, index_name, search_query)
+    return jsonify({"articles": [result["_source"] for result in search_results]})
 
 
 if __name__ == '__main__':
