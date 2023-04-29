@@ -10,15 +10,31 @@ def create_index(es_instance, index_name):
     request_body = {
         "settings": {
             "number_of_shards": 1,
-            "number_of_replicas": 0
+            "number_of_replicas": 0,
+            "analysis": {
+                "analyzer": {
+                    "custom_analyzer": {
+                        "tokenizer": "standard",
+                        "filter": ["lowercase", "custom_stemmer"]
+                    }
+                },
+                "filter": {
+                    "custom_stemmer": {
+                        "type": "stemmer",
+                        "language": "english"
+                    }
+                }
+            }
         },
         "mappings": {
             "properties": {
                 "title": {
-                    "type": "text"
+                    "type": "text",
+                    "analyzer": "custom_analyzer"
                 },
                 "text": {
-                    "type": "text"
+                    "type": "text",
+                    "analyzer": "custom_analyzer"
                 }
             }
         }
@@ -37,7 +53,8 @@ def search_articles(es_instance, index_name, query):
         "query": {
             "multi_match": {
                 "query": query,
-                "fields": ["title", "text"]
+                "fields": ["title", "text"],
+                "fuzziness": "AUTO"  # Add this line to enable fuzziness
             }
         }
     }
@@ -75,3 +92,11 @@ def retrieve_everything():
 
 if __name__ == '__main__':
     app.run(port=5000)
+
+# Use the code below to reset the index if necessary:
+'''
+if __name__ == '__main__':
+    delete_index_if_exists(es, index_name)
+    create_index(es, index_name)
+    app.run(port=5000)
+'''

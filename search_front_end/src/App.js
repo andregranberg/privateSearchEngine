@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import "./App.css";
 
 function App() {
   const [title, setTitle] = useState("");
@@ -79,35 +80,43 @@ function App() {
   };
 
   return (
-    <div>
-      <h1>Add Article</h1>
+    <div className="container">
+      <h1>The Information Bank</h1>
+      <h2>New Information</h2>
       <div>
         <label>Title:</label>
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          className="article-input"
         />
       </div>
       <div>
         <label>Text:</label>
-        <textarea value={text} onChange={(e) => setText(e.target.value)} />
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          className="article-textarea"
+        />
       </div>
-      <button onClick={handleSubmit}>Submit</button>
+      <button onClick={handleSubmit}>Add</button>
 
-      <h2>Search Articles</h2>
       <div>
-      <h2>Search Articles</h2>
-    <div>
-      <label>Search:</label>
-      <input
-        type="text"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
-      <button onClick={handleSearch}>Search</button>
-    </div>
-    <button onClick={handleRetrieveEverything}>Show All Articles</button>
+        <h2>Find Information</h2>
+        <div className="search-controls">
+          <label>Search:</label>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="search-input"
+          />
+          <button onClick={handleSearch}>Search</button>
+          <button onClick={handleRetrieveEverything} className="show-all-btn">
+            Show All Articles
+          </button>
+        </div>
       </div>
 
       <h3>Search Results</h3>
@@ -121,7 +130,7 @@ function App() {
                 handleArticleSelection(article._id, e.target.checked)
               }
             />
-            <h4>{article.title}</h4>
+            <h4 className="article-title">{article.title}</h4>
             <p>{article.text}</p>
           </li>
         ))}
