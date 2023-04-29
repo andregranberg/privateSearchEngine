@@ -1,7 +1,29 @@
 from flask import Flask, request, jsonify
-from flask import render_template
 from flask_cors import CORS
 from elasticsearch import Elasticsearch
+
+def delete_index_if_exists(es_instance, index_name):
+    if es_instance.indices.exists(index=index_name):
+        es_instance.indices.delete(index=index_name)
+
+def create_index(es_instance, index_name):
+    request_body = {
+        "settings": {
+            "number_of_shards": 1,
+            "number_of_replicas": 0
+        },
+        "mappings": {
+            "properties": {
+                "title": {
+                    "type": "text"
+                },
+                "text": {
+                    "type": "text"
+                }
+            }
+        }
+    }
+    es_instance.indices.create(index=index_name, body=request_body)
 
 app = Flask(__name__)
 CORS(app)
