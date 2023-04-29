@@ -44,5 +44,12 @@ def remove_articles():
         es.delete(index=index_name, id=article_id)
     return jsonify({"result": "success"})
 
+@app.route('/retrieve-everything', methods=['GET'])
+def retrieve_everything():
+    query = {"query": {"match_all": {}}}
+    result = es.search(index=index_name, body=query)
+    articles = [{"_id": hit["_id"], **hit["_source"]} for hit in result["hits"]["hits"]]
+    return jsonify({"articles": articles})
+
 if __name__ == '__main__':
     app.run(port=5000)

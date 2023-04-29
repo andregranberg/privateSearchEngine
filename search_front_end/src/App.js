@@ -67,6 +67,17 @@ function App() {
     }
   };
 
+  const handleRetrieveEverything = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/retrieve-everything");
+  
+      setSearchResults(response.data.articles);
+    } catch (error) {
+      console.error("Error:", error);
+      alert("An error occurred.");
+    }
+  };
+
   return (
     <div>
       <h1>Add Article</h1>
@@ -86,13 +97,17 @@ function App() {
 
       <h2>Search Articles</h2>
       <div>
-        <label>Search:</label>
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        <button onClick={handleSearch}>Search</button>
+      <h2>Search Articles</h2>
+    <div>
+      <label>Search:</label>
+      <input
+        type="text"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+      <button onClick={handleSearch}>Search</button>
+    </div>
+    <button onClick={handleRetrieveEverything}>Show All Articles</button>
       </div>
 
       <h3>Search Results</h3>
