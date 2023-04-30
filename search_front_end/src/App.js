@@ -132,7 +132,7 @@ function App() {
           className="article-textarea"
         />
       </div>
-      <button onClick={handleSubmit}>Add</button>
+      <button onClick={handleSubmit} className="add-btn">Add</button>
 
       <div>
         <h2>Find Information</h2>
@@ -144,7 +144,7 @@ function App() {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="search-input"
           />
-          <button onClick={handleSearch}>Search</button>
+          <button onClick={handleSearch} className="search-btn">Search</button>
           <button onClick={handleRetrieveEverything} className="show-all-btn">
             Show All Articles
           </button>
@@ -152,7 +152,7 @@ function App() {
       </div>
 
       <h3>Search Results</h3>
-      <button onClick={handleRemoveSelected}>Remove Selected</button>
+      <button onClick={handleRemoveSelected} className="remove-btn">Remove Selected</button>
       <ul>
       {searchResults.map((article, index) => (
         <li key={index}>
@@ -204,7 +204,8 @@ function App() {
                 ? handleUpdateArticle(article._id, article.title, article.text)
                 : handleEditArticle(article._id)
             }
-          >
+            className={editingArticles.has(article._id) ? "done-btn" : "edit-btn"}
+            >
             {editingArticles.has(article._id) ? "Done" : "Edit"}
           </button>
         </li>

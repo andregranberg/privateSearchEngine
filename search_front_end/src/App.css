@@ -44,6 +44,26 @@ button {
   cursor: pointer;
 }
 
+.add-btn {
+  background-color: #2e9c39;
+}
+
+.search-btn {
+  background-color: #383fc4;
+}
+
+.remove-btn {
+  background-color: #b90c0c;
+}
+
+.edit-btn {
+  background-color: #ef8e13;
+}
+
+.done-btn {
+  background-color: #2e9c39;
+}
+
 .show-all-btn {
   white-space: nowrap;
 }
