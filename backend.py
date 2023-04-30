@@ -90,6 +90,19 @@ def retrieve_everything():
     articles = [{"_id": hit["_id"], **hit["_source"]} for hit in result["hits"]["hits"]]
     return jsonify({"articles": articles})
 
+@app.route('/update-article', methods=['POST'])
+def update_article():
+    article_data = request.get_json()
+    article_id = article_data["id"]
+    updated_article = {
+        "doc": {
+            "title": article_data["title"],
+            "text": article_data["text"],
+        }
+    }
+    es.update(index=index_name, id=article_id, body=updated_article)
+    return jsonify({"result": "success"})
+
 if __name__ == '__main__':
     app.run(port=5000)
 

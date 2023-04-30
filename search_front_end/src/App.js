@@ -8,6 +8,38 @@ function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [selectedArticles, setSelectedArticles] = useState(new Set());
+  const [editingArticles, setEditingArticles] = useState(new Set());
+
+  const handleEditArticle = (id) => {
+    const newEditingArticles = new Set(editingArticles);
+    if (newEditingArticles.has(id)) {
+      newEditingArticles.delete(id);
+    } else {
+      newEditingArticles.add(id);
+    }
+    setEditingArticles(newEditingArticles);
+  };
+  
+  const handleUpdateArticle = async (id, title, text) => {
+    try {
+      await axios.post("http://localhost:5000/update-article", {
+        id,
+        title,
+        text,
+      });
+  
+      const updatedArticleIndex = searchResults.findIndex((article) => article._id === id);
+      const updatedSearchResults = [...searchResults];
+      updatedSearchResults[updatedArticleIndex] = { ...updatedSearchResults[updatedArticleIndex], title, text };
+      setSearchResults(updatedSearchResults);
+  
+      handleEditArticle(id);
+    } catch (error) {
+      console.error("Error:", error);
+      alert("An error occurred.");
+    }
+  };
+  
 
   const handleSubmit = async () => {
     try {
@@ -122,18 +154,61 @@ function App() {
       <h3>Search Results</h3>
       <button onClick={handleRemoveSelected}>Remove Selected</button>
       <ul>
-        {searchResults.map((article, index) => (
-          <li key={index}>
-            <input
-              type="checkbox"
-              onChange={(e) =>
-                handleArticleSelection(article._id, e.target.checked)
-              }
-            />
-            <h4 className="article-title">{article.title}</h4>
-            <p>{article.text}</p>
-          </li>
-        ))}
+      {searchResults.map((article, index) => (
+        <li key={index}>
+          <input
+            type="checkbox"
+            onChange={(e) =>
+              handleArticleSelection(article._id, e.target.checked)
+            }
+          />
+          {editingArticles.has(article._id) ? (
+            <>
+              <input
+                type="text"
+                value={article.title}
+                onChange={(e) =>
+                  setSearchResults(
+                    searchResults.map((art) =>
+                      art._id === article._id
+                        ? { ...art, title: e.target.value }
+                        : art
+                    )
+                  )
+                }
+                className="article-input"
+              />
+              <textarea
+                value={article.text}
+                onChange={(e) =>
+                  setSearchResults(
+                    searchResults.map((art) =>
+                      art._id === article._id
+                        ? { ...art, text: e.target.value }
+                        : art
+                    )
+                  )
+                }
+                className="article-textarea"
+              />
+            </>
+          ) : (
+            <>
+              <h4 className="article-title">{article.title}</h4>
+              <p>{article.text}</p>
+            </>
+          )}
+          <button
+            onClick={() =>
+              editingArticles.has(article._id)
+                ? handleUpdateArticle(article._id, article.title, article.text)
+                : handleEditArticle(article._id)
+            }
+          >
+            {editingArticles.has(article._id) ? "Done" : "Edit"}
+          </button>
+        </li>
+      ))}
       </ul>
     </div>
   );
