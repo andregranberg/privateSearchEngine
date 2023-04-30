@@ -48,6 +48,23 @@ button {
   background-color: #2e9c39;
 }
 
+.success-symbol {
+  animation: fadeOut 5s forwards;
+  opacity: 1;
+  font-size: 14px;
+  margin-left: 10px;
+  color: green;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
 .search-btn {
   background-color: #383fc4;
 }

@@ -9,6 +9,7 @@ function App() {
   const [searchResults, setSearchResults] = useState([]);
   const [selectedArticles, setSelectedArticles] = useState(new Set());
   const [editingArticles, setEditingArticles] = useState(new Set());
+  const [showSuccessSymbol, setShowSuccessSymbol] = useState(false);
 
   const handleDownloadJSON = () => {
     const json = JSON.stringify(searchResults, null, 2);
@@ -59,7 +60,12 @@ function App() {
       });
 
       if (response.data.result === "success") {
-        alert("Article added successfully!");
+        // Replace the alert line with the following code
+        setShowSuccessSymbol(true);
+        setTimeout(() => {
+          setShowSuccessSymbol(false);
+        }, 5000); // Set the delay to 5 seconds; change to 7000 for 7 seconds
+
         setTitle("");
         setText("");
       } else {
@@ -143,6 +149,9 @@ function App() {
         />
       </div>
       <button onClick={handleSubmit} className="add-btn">Add</button>
+      {showSuccessSymbol && (
+        <span className="success-symbol" onAnimationEnd={() => setShowSuccessSymbol(false)}>added</span>
+      )}
 
       <div>
         <h2>Find Information</h2>
