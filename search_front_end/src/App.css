@@ -54,6 +54,7 @@ button {
 
 .remove-btn {
   background-color: #b90c0c;
+  margin-right: 8px;
 }
 
 .edit-btn {
@@ -75,7 +76,7 @@ button:hover {
 .search-controls {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 ul {

@@ -10,6 +10,16 @@ function App() {
   const [selectedArticles, setSelectedArticles] = useState(new Set());
   const [editingArticles, setEditingArticles] = useState(new Set());
 
+  const handleDownloadJSON = () => {
+    const json = JSON.stringify(searchResults, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "articles.json";
+    a.click();
+  };
+
   const handleEditArticle = (id) => {
     const newEditingArticles = new Set(editingArticles);
     if (newEditingArticles.has(id)) {
@@ -152,7 +162,12 @@ function App() {
       </div>
 
       <h3>Search Results</h3>
-      <button onClick={handleRemoveSelected} className="remove-btn">Remove Selected</button>
+      {selectedArticles.size > 0 && (
+        <button onClick={handleRemoveSelected} className="remove-btn">Remove Selected</button>
+      )}
+      {searchResults.length > 0 && (
+        <button onClick={handleDownloadJSON} className="download-btn">Download as JSON</button>
+      )}
       <ul>
       {searchResults.map((article, index) => (
         <li key={index}>
