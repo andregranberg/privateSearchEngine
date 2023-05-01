@@ -39,6 +39,10 @@ def create_index(es_instance, index_name):
                 "link": {  # Add this field
                     "type": "text",
                     "analyzer": "custom_analyzer"
+                },
+                "tags": {  # Add this field
+                    "type": "text",
+                    "analyzer": "custom_analyzer"
                 }
             }
         }
@@ -57,7 +61,7 @@ def search_articles(es_instance, index_name, query):
         "query": {
             "multi_match": {
                 "query": query,
-                "fields": ["title", "text"],
+                "fields": ["title", "text", "tags"],
                 "fuzziness": "AUTO"  # Add this line to enable fuzziness
             }
         }
@@ -102,6 +106,8 @@ def update_article():
         "doc": {
             "title": article_data["title"],
             "text": article_data["text"],
+            "link": article_data.get("link", ""),  # Add this line
+            "tags": article_data["tags"],  # Add this line
         }
     }
     es.update(index=index_name, id=article_id, body=updated_article)

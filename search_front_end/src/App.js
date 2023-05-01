@@ -11,6 +11,7 @@ function App() {
   const [editingArticles, setEditingArticles] = useState(new Set());
   const [showSuccessSymbol, setShowSuccessSymbol] = useState(false);
   const [link, setLink] = useState("");
+  const [tags, setTags] = useState("");
 
   const handleDownloadJSON = () => {
     const json = JSON.stringify(searchResults, null, 2);
@@ -32,17 +33,19 @@ function App() {
     setEditingArticles(newEditingArticles);
   };
   
-  const handleUpdateArticle = async (id, title, text) => {
+  const handleUpdateArticle = async (id, title, text, tags, link) => {
     try {
       await axios.post("http://localhost:5000/update-article", {
         id,
         title,
         text,
+        link, // Add this line
+        tags,
       });
   
       const updatedArticleIndex = searchResults.findIndex((article) => article._id === id);
       const updatedSearchResults = [...searchResults];
-      updatedSearchResults[updatedArticleIndex] = { ...updatedSearchResults[updatedArticleIndex], title, text };
+      updatedSearchResults[updatedArticleIndex] = { ...updatedSearchResults[updatedArticleIndex], title, text, link, tags,};
       setSearchResults(updatedSearchResults);
   
       handleEditArticle(id);
@@ -59,6 +62,7 @@ function App() {
         title,
         text,
         link: link || null, // Add this line
+        tags: tags || null,
       });
 
       if (response.data.result === "success") {
@@ -159,6 +163,15 @@ function App() {
           className="article-input"
         />
       </div>
+      <div>
+        <label>Tags:</label>
+        <input
+          type="text"
+          value={tags}
+          onChange={(e) => setTags(e.target.value)}
+          className="article-input"
+        />
+      </div>
       <button onClick={handleSubmit} className="add-btn">Add</button>
       {showSuccessSymbol && (
         <span className="success-symbol" onAnimationEnd={() => setShowSuccessSymbol(false)}>added</span>
@@ -196,10 +209,28 @@ function App() {
             <input
               type="text"
               value={article.title}
+              onChange={(e) =>
+                setSearchResults(
+                  searchResults.map((art) =>
+                    art._id === article._id
+                      ? { ...art, title: e.target.value }
+                      : art
+                  )
+                )
+              }
               // ...other code for handling title input
             />
             <textarea
               value={article.text}
+              onChange={(e) =>
+                setSearchResults(
+                  searchResults.map((art) =>
+                    art._id === article._id
+                      ? { ...art, text: e.target.value }
+                      : art
+                  )
+                )
+              }
               // ...other code for handling text input
             />
             {/* Add this block of code */}
@@ -219,6 +250,21 @@ function App() {
               className="article-input"
             />
             {/* End of the new block */}
+            <label>Tags:</label>
+              <input
+                type="text"
+                value={article.tags}
+                onChange={(e) =>
+                  setSearchResults(
+                    searchResults.map((art) =>
+                      art._id === article._id
+                        ? { ...art, tags: e.target.value }
+                        : art
+                    )
+                  )
+                }
+                className="article-input"
+              />
           </>
         ) : (
           <>
@@ -229,6 +275,11 @@ function App() {
                 <a href={article.link} target="_blank" rel="noopener noreferrer">
                   Read more
                 </a>
+              </p>
+            )}
+            {article.tags && (
+              <p>
+                <strong>Tags:</strong> {article.tags}
               </p>
             )}
           </>
@@ -251,7 +302,7 @@ function App() {
           {editingArticles.has(article._id) && (
             <button
               onClick={() =>
-                handleUpdateArticle(article._id, article.title, article.text)
+                handleUpdateArticle(article._id, article.title, article.text, article.tags, article.link)
               }
               className="done-btn"
             >
