@@ -58,7 +58,7 @@ function App() {
       const response = await axios.post("http://localhost:5000/add-article", {
         title,
         text,
-        link, // Add this line
+        link: link || null, // Add this line
       });
 
       if (response.data.result === "success") {
@@ -224,11 +224,13 @@ function App() {
           <>
             <h4 className="article-title">{article.title}</h4>
             <p>{article.text}</p>
-            <p>
-              <a href={article.link} target="_blank" rel="noopener noreferrer">
-                Read more
-              </a>
-            </p>
+            {article.link && (
+              <p>
+                <a href={article.link} target="_blank" rel="noopener noreferrer">
+                  Read more
+                </a>
+              </p>
+            )}
           </>
         )}
         {/* Add the following div */}
