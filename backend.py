@@ -111,6 +111,7 @@ if __name__ == '__main__':
     app.run(port=5000)
 
 # Use the code below to reset the index if necessary:
+
 '''
 if __name__ == '__main__':
     delete_index_if_exists(es, index_name)
