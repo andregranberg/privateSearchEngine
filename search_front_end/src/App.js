@@ -10,6 +10,7 @@ function App() {
   const [selectedArticles, setSelectedArticles] = useState(new Set());
   const [editingArticles, setEditingArticles] = useState(new Set());
   const [showSuccessSymbol, setShowSuccessSymbol] = useState(false);
+  const [link, setLink] = useState("");
 
   const handleDownloadJSON = () => {
     const json = JSON.stringify(searchResults, null, 2);
@@ -57,6 +58,7 @@ function App() {
       const response = await axios.post("http://localhost:5000/add-article", {
         title,
         text,
+        link, // Add this line
       });
 
       if (response.data.result === "success") {
@@ -148,6 +150,15 @@ function App() {
           className="article-textarea"
         />
       </div>
+      <div>
+        <label>Link:</label>
+        <input
+          type="text"
+          value={link}
+          onChange={(e) => setLink(e.target.value)}
+          className="article-input"
+        />
+      </div>
       <button onClick={handleSubmit} className="add-btn">Add</button>
       {showSuccessSymbol && (
         <span className="success-symbol" onAnimationEnd={() => setShowSuccessSymbol(false)}>added</span>
@@ -180,59 +191,74 @@ function App() {
       <ul>
       {searchResults.map((article, index) => (
         <li key={index}>
+        {editingArticles.has(article._id) ? (
+          <>
+            <input
+              type="text"
+              value={article.title}
+              // ...other code for handling title input
+            />
+            <textarea
+              value={article.text}
+              // ...other code for handling text input
+            />
+            {/* Add this block of code */}
+            <label>Link:</label>
+            <input
+              type="text"
+              value={article.link}
+              onChange={(e) =>
+                setSearchResults(
+                  searchResults.map((art) =>
+                    art._id === article._id
+                      ? { ...art, link: e.target.value }
+                      : art
+                  )
+                )
+              }
+              className="article-input"
+            />
+            {/* End of the new block */}
+          </>
+        ) : (
+          <>
+            <h4 className="article-title">{article.title}</h4>
+            <p>{article.text}</p>
+            <p>
+              <a href={article.link} target="_blank" rel="noopener noreferrer">
+                Read more
+              </a>
+            </p>
+          </>
+        )}
+        {/* Add the following div */}
+        <div className="article-controls">
           <input
             type="checkbox"
+            checked={selectedArticles.has(article._id)}
             onChange={(e) =>
               handleArticleSelection(article._id, e.target.checked)
             }
           />
-          {editingArticles.has(article._id) ? (
-            <>
-              <input
-                type="text"
-                value={article.title}
-                onChange={(e) =>
-                  setSearchResults(
-                    searchResults.map((art) =>
-                      art._id === article._id
-                        ? { ...art, title: e.target.value }
-                        : art
-                    )
-                  )
-                }
-                className="article-input"
-              />
-              <textarea
-                value={article.text}
-                onChange={(e) =>
-                  setSearchResults(
-                    searchResults.map((art) =>
-                      art._id === article._id
-                        ? { ...art, text: e.target.value }
-                        : art
-                    )
-                  )
-                }
-                className="article-textarea"
-              />
-            </>
-          ) : (
-            <>
-              <h4 className="article-title">{article.title}</h4>
-              <p>{article.text}</p>
-            </>
-          )}
           <button
-            onClick={() =>
-              editingArticles.has(article._id)
-                ? handleUpdateArticle(article._id, article.title, article.text)
-                : handleEditArticle(article._id)
-            }
-            className={editingArticles.has(article._id) ? "done-btn" : "edit-btn"}
-            >
-            {editingArticles.has(article._id) ? "Done" : "Edit"}
+            onClick={() => handleEditArticle(article._id)}
+            className="edit-btn"
+          >
+            {editingArticles.has(article._id) ? "Cancel" : "Edit"}
           </button>
-        </li>
+          {editingArticles.has(article._id) && (
+            <button
+              onClick={() =>
+                handleUpdateArticle(article._id, article.title, article.text)
+              }
+              className="done-btn"
+            >
+              Done
+            </button>
+          )}
+        </div>
+        {/* End of the added div */}
+      </li>
       ))}
       </ul>
     </div>

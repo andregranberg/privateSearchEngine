@@ -35,6 +35,10 @@ def create_index(es_instance, index_name):
                 "text": {
                     "type": "text",
                     "analyzer": "custom_analyzer"
+                },
+                "link": {  # Add this field
+                    "type": "text",
+                    "analyzer": "custom_analyzer"
                 }
             }
         }
